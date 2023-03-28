@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -9,11 +9,50 @@ function App() {
 	return (
 		<div className='App'>
 			<Counter></Counter>
+			<ExternalUsers></ExternalUsers>
 		</div>
 	);
 }
 
-function Counter(props) {
+function ExternalUsers() {
+	// useEffect load data and keep data into the state, so the initial data should be an empty array
+	const [users, setUsers] = useState([]);
+
+	// Load data using useEffect, to prevent loop of effect set dependency by []
+	useEffect(() => {
+		fetch("https://jsonplaceholder.typicode.com/users")
+			.then((res) => res.json())
+			// .then((data) => console.log(data));
+			.then((data) => setUsers(data));
+	}, []);
+
+	return (
+		<div>
+			<h2>External Users: {users.name}</h2>
+			{users.map((user) => (
+				<User
+					name={user.name}
+					email={user.email}
+					address={user.address.city}
+					phone={user.phone}
+				></User>
+			))}
+		</div>
+	);
+}
+
+function User(props) {
+	return (
+		<div className="user">
+			<h2>{props.name}</h2>
+			<p>Email: {props.email}</p>
+			<p>Phone: {props.phone}</p>
+			<p>Address: {props.address}</p>
+		</div>
+	);
+}
+
+function Counter() {
 	const [count, setCount] = useState(0);
 	const increaseCount = () => {
 		const newCount = setCount(count + 1);
